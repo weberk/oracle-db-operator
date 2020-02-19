@@ -1,4 +1,4 @@
-IMAGE?=io-acme/my-new-operator
+IMAGE?=oracle/db-example-operator
 
 .PHONY: build
 build: package image-build

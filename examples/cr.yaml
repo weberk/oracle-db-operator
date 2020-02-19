@@ -1,13 +1,7 @@
-apiVersion: io.acme/v1
-kind: Example
+apiVersion: com.oracle/v1
+kind: OracleCdbService
 metadata:
-  name: my-x
+  name: mypdb
 spec:
-  color: blue
-  memory: 128Mi
-  cpu: 0.5
-  env:
-  - name: FOO
-    value: bar
-  - name: PATH
-    value: /bin
+  storage: 1000000000
+  tempStorage: 10000000

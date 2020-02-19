@@ -1,9 +1,7 @@
-FROM jkremser/mini-jre:8.1
+FROM openjdk:8
 
 ENV JAVA_OPTS="-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
 
-LABEL BASE_IMAGE="jkremser/mini-jre:8"
+ADD target/db-example-operator-*.jar /db-example-operator.jar
 
-ADD target/my-new-operator-*.jar /my-new-operator.jar
-
-CMD ["/usr/bin/java", "-jar", "/my-new-operator.jar"]
+CMD ["java", "-jar", "/db-example-operator.jar"]

@@ -9,8 +9,8 @@
     <version>0.3.11</version>
 </parent>
 <modelVersion>4.0.0</modelVersion>
-<groupId>io.acme</groupId>
-<artifactId>my-new-operator</artifactId>
+<groupId>com.oracle</groupId>
+<artifactId>oracle-db-operator</artifactId>
 <version>0.0.1-SNAPSHOT</version>
 
 <properties>
@@ -23,6 +23,12 @@
         <groupId>io.radanalytics</groupId>
         <artifactId>abstract-operator</artifactId>
         <version>${abstract-operator.version}</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+    <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.5.9</version>
     </dependency>
     <dependency>
         <groupId>junit</groupId>
@@ -54,4 +60,5 @@
         </plugin>
     </plugins>
 </build>
+    <name>oracle-db-operator</name>
 </project>
