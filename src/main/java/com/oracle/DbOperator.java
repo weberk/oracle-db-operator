@@ -20,10 +20,6 @@ import okhttp3.OkHttpClient;
 public class DbOperator extends AbstractOperator<OracleCdbService> {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractOperator.class.getName());
-
-    private static String prefix = "oracle";
-
-
     private static String DEFAULT_USERNAME="DBUSER";
 
     public DbOperator() {
@@ -33,7 +29,7 @@ public class DbOperator extends AbstractOperator<OracleCdbService> {
 
     protected void onAdd(OracleCdbService srv) {
         log.info("new service is to be created: {}", srv);
-        String resName = getResourceName(srv.getName());
+        String resName = srv.getName();
         String pdbName = Utilities.sanitizePDBName(resName);
 
         String pdbUsername = DEFAULT_USERNAME;
@@ -70,99 +66,24 @@ public class DbOperator extends AbstractOperator<OracleCdbService> {
                     .addToData("passwd", Utilities.encodeBase64(pdbPassword))
                     .build();
 
-            KubernetesList resources = new KubernetesListBuilder()
-                    .addToSecretItems(secret)
-                    /*.addToServiceItems(service)*/
-                    /*.addToDeploymentItems(deployment)*/
-                    .build();
-
-
-            client.resourceList(resources).inNamespace(namespace).createOrReplace();
-
+            client.secrets().inNamespace(namespace).create(secret);
 
             log.info("new service has been created: {}", srv);
 
         } catch (IOException e) {
             log.error("error", e);
         }
-
-
-
-
-        // this create a specific service but since we are using connection manager it is not needed
-        /*
-        Service service = new  ServiceBuilder()
-                .withNewMetadata()
-                .withName(resName)
-                .endMetadata()
-                .withNewSpec()
-                .addNewPort()
-                .withProtocol("TCP")
-                .withPort(connectionManagerPort)
-                .withNewTargetPort(connectionManagerPort)
-                .endPort()
-                .endSpec()
-                .build();
-*/
-
-
-
-
-/*
-
-
-
-
-;
-       /*
-       it is just a try, not useful in prod
-        ArrayList<Container> containers = new ArrayList<>();
-
-
-            Container container = new ContainerBuilder()
-                    .withImage("fra.ocir.io/emeaseitalysandbox/ocm:1.0.0")
-                    .withName(resName)
-                    .build();
-
-            containers.add(container);
-        
-
-        Deployment deployment = new DeploymentBuilder()
-                .withNewMetadata()
-                .withName(resName)
-                .addToLabels("app", resName)
-                .endMetadata()
-                .withNewSpec()
-                .withNewSelector()
-                .addToMatchLabels("app", resName)
-                .endSelector()
-                .withNewTemplate()
-                .withNewMetadata()
-                .withName(resName)
-                .addToLabels("app", resName)
-                .endMetadata()
-                .withNewSpec()
-                .addAllToContainers(containers)
-                .endSpec()
-                .endTemplate()
-                .endSpec().build();
-
-*/
-
-
-
     }
 
     protected void onDelete(OracleCdbService srv) {
         log.info("existing example has been deleted: {}", srv);
 
-        String resName = getResourceName(srv.getName());
 
         try {
-            OrdsClient.deletePdb(client, namespace, Utilities.sanitizePDBName(resName));
+            OrdsClient.deletePdb(client, namespace, Utilities.sanitizePDBName(srv.getName()));
 
-            client.services().inNamespace(namespace).withName(getResourceName(srv.getName())).delete();
-            client.secrets().inNamespace(namespace).withName(getResourceName(srv.getName())).delete();
+            client.services().inNamespace(namespace).withName(srv.getName()).delete();
+            client.secrets().inNamespace(namespace).withName(srv.getName()).delete();
 
         } catch (IOException e) {
             log.error("error", e);
@@ -174,11 +95,6 @@ public class DbOperator extends AbstractOperator<OracleCdbService> {
 
     protected void onModify(OracleCdbService srv) {
         log.info("existing example has been modified: {}", srv);
-    }
-
-
-    private static String getResourceName(String app) {
-        return prefix + "-" + app;
     }
 
     private static String getJdbcUrl(String serviceName) {

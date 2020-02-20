@@ -1,20 +1,20 @@
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
-  name: oracle-db-connection-manager
+  name: oracle-cman
 spec:
   replicas: 1
   minReadySeconds: 30
   selector:
     matchLabels:
-      app: oracle-db-connection-manager
+      app: oracle-cman
   template:
     metadata:
       labels:
-        app: oracle-db-connection-manager
+        app: oracle-cman
     spec:
       containers:
-        - name: oracle-db-connection-manager
+        - name: oracle-cman
           image: fra.ocir.io/oraseemeadesandbox/pdos/oracle/client-cman:19.3.0
           ports:
             - containerPort: 1521
@@ -27,7 +27,7 @@ spec:
             - name: DOMAIN
               value: "default.svc.cluster.local"
             - name: PUBLIC_HOSTNAME
-              value: "oracle-db-connection-manager-service"
+              value: "oracle-cman-service"
             - name: PUBLIC_IP
               value: "127.0.0.1"
       imagePullSecrets:
@@ -39,11 +39,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: oracle-db-connection-manager-service
+  name: oracle-cman-service
 spec:
   ports:
     - port: 1521
       targetPort: 1521
       protocol: TCP
   selector:
-    app: oracle-db-connection-manager
+    app: oracle-cman
