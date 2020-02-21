@@ -42,12 +42,10 @@ spec:
         - name: CRD
           value: "true"
         - name: ORDS_HOST
-#          value: "oracle-ords-service"
-          value: "oracle-db-ords"
+          value: "oracle-ords-service"
         - name: ORDS_BASEPATH
           value: "/ords"
         - name: ORDS_PORT
-#          value: "8080"
           value: "8888"
         - name: ORDS_PROTOCOL
           value: "http"
