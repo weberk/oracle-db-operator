@@ -4,6 +4,9 @@ metadata:
   name: oracle-ords-config
 spec:
   storageClassName: oci
+  selector:
+    matchLabels:
+      failure-domain.beta.kubernetes.io/zone: "EU-FRANKFURT-AD-1"
   accessModes:
     - ReadWriteOnce
   resources:
