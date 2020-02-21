@@ -25,7 +25,8 @@ spec:
             periodSeconds: 30
           env:
             - name: ORACLE_HOST
-              value: oracle-db-enterprise-service
+#              value: oracle-db-enterprise-service
+              value: oracle-db-enterprise-1
             - name: ORACLE_SERVICE
               value: ORCLCDB
             - name: ORACLE_PWD
@@ -57,7 +58,7 @@ spec:
             name: oracle-ords-config
         - name: oracle-ords-config-persistent
           persistentVolumeClaim:
-            claimName: oracleclaim-ords-config
+            claimName: oracle-ords-config
 
 ---
 apiVersion: v1

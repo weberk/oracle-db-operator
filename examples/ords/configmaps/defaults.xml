@@ -7,6 +7,9 @@
 <entry key="db.cdb.adminUser">C##DBAPI_CDB_ADMIN as SYSDBA</entry>
 <entry key="db.cdb.adminUser.password">PDos00###</entry>
 <entry key="db.hostname">oracle-db-enterprise-1</entry>
+<!--
+<entry key="db.hostname">oracle-db-enterprise-service</entry>
+-->
 <entry key="db.port">1521</entry>
 <entry key="db.servicename">ORCLCDB</entry>
 <entry key="jdbc.DriverType">thin</entry>
