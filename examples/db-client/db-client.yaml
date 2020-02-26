@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: oracle-db-client
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: oracle-db-client
+    spec:
+      containers:
+      - name: db-client
+        image: doschkinow/instantclient:19
+        command:
+        - bash
+        - -c
+        - "echo $SQL | sqlplus $PDB_USER/$PDB_PASSWORD@$PDB_NAME; trap : TERM INT; sleep infinity & wait"
+        env:
+        - name: SQL
+          value: "select sysdate from dual;"
+        - name: PDB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: oracle-db-client-config
+              key: pdbname
+        - name: PDB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mypdb
+              key: username
+        - name: PDB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mypdb
+              key: passwd
