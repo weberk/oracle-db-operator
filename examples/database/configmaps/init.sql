@@ -1,9 +1,3 @@
--- ORDS USER
---CREATE USER C##DBAPI_CDB_ADMIN IDENTIFIED BY "PDos00###";
+-- ORDS user for REST PDB lifecycle
+CREATE USER C##DBAPI_CDB_ADMIN IDENTIFIED BY "PDos00###";
 GRANT SYSDBA TO C##DBAPI_CDB_ADMIN CONTAINER = ALL;
-GRANT connect  TO C##DBAPI_CDB_ADMIN CONTAINER = ALL;
-
--- CONNECTION TO CONNECTION MANAGER
-alter system  set remote_listener='oracle-db-connection-manager-service:1521' scope=both sid='*';
-alter system register;
-
