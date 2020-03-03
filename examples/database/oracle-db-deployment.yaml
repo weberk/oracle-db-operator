@@ -2,21 +2,21 @@
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
-  name: oracle-db-enterprise
+  name: oracle-db
 spec:
   replicas: 1
   minReadySeconds: 30
   selector:
     matchLabels:
-      app: oracle-db-enterprise
+      app: oracle-db
   template:
     metadata:
       labels:
-        app: oracle-db-enterprise
+        app: oracle-db
     spec:
-      hostname: oracle-db-enterprise
+      hostname: oracle-db
       containers:      
-      - name: oracle-db-enterprise
+      - name: oracle-db
         image: fra.ocir.io/oraseemeadesandbox/pdos/oracle/database:19.3.0-ee
         env:
         - name: ORACLE_SID
@@ -58,11 +58,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: oracle-db-enterprise-service
+  name: oracle-db-service
 spec:
   ports:
   - port: 1521
     targetPort: 1521
     protocol: TCP
   selector:
-    app: oracle-db-enterprise
+    app: oracle-db
