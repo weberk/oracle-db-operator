@@ -16,7 +16,7 @@ spec:
       containers:
         - name: busybox
           image: busybox
-          command: ["sh", "-c", "cd /conf && chmod +x *.sh && copy-init-files.sh"]
+          command: ["sh", "-c", "cd /conf && chmod +x *.sh && copy-init-files.sh && trap : TERM INT; sleep infinity && wait"]
           volumeMounts:
             - name: oracle-db-ords-config
               mountPath: "/conf"
