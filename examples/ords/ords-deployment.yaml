@@ -39,7 +39,7 @@ spec:
 
       initContainers:
         - name: setup-configs
-          command: ["sh", "-c", "cd /conf && chmod +x *.sh && copy-init-files.sh"]
+          command: ["sh", "-c", "if test -f /opt/oracle/ords/config/ords/credentials; then echo ords already initialized...; else cp /conf/* /opt/oracle/ords/config/ords; chmod +x /opt/oracle/ords/config/ords/*.sh; chown -R 54321:54321 /opt/oracle/ords/config/ords; fi"]
           image: busybox
           volumeMounts:
             - name: oracle-db-ords-config
