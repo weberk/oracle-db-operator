@@ -70,8 +70,8 @@ public class OrdsClient {
         final String ordsPassword =  Utilities.decodeBase64(s.getData().get("password"));
         final String ordsUsername = Utilities.decodeBase64(s.getData().get("username"));
 
-        log.info("Returned username [" + ordsUsername + "/*****]");
-        log.info("Returned credentials [" + ordsPassword + "/*****]");
+        log.info("Returned username [" + ordsUsername + "]");
+        log.info("Returned credentials [" + ordsPassword + "]");
 
 
         ObjectMapper mapper = new ObjectMapper();
@@ -82,7 +82,6 @@ public class OrdsClient {
         CloseableHttpClient client = getClient(ordsUsername, ordsPassword);
 
         URI url = getUrl(ORDS_PATH_CREATE_PDB);
-        log.info("Calling ORDS service at ["+url.toString()+"]");
 
         HttpPost request = new HttpPost( url );
         request.addHeader("Content-Type", "application/json");
