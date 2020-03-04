@@ -10,7 +10,7 @@ spec:
         app: oracle-db-client
     spec:
       containers:
-      - name: db-client
+      - name: oracle-db-client
         image: doschkinow/instantclient:19
         command:
         - bash
