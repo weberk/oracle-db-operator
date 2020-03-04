@@ -53,10 +53,6 @@ public class DbOperator extends AbstractOperator<OracleCdbService> {
         try {
             OrdsClient.createPdb(client, namespace, request);
 
-            Integer connectionManagerPort = Integer.parseInt(
-                    Utilities.getEnv(Constants.Environment.ENV_CONNECTION_MANAGER_SERVICE_PORT)
-            );
-
             Secret secret = new SecretBuilder()
                     .withNewMetadata()
                     .withName(resName)
@@ -101,9 +97,10 @@ public class DbOperator extends AbstractOperator<OracleCdbService> {
         /*return "jdbc:oracle:thin:@(DESCRIPTION = (TRANSPORT_CONNECT_TIMEOUT=3)(CONNECT_TIMEOUT=60)(RETRY_COUNT=20)(RETRY_DELAY=3)(FAILOVER=ON)(ADDRESS_LIST=(ADDRESS=(PROTOCOL=tcp)(HOST="+Utilities.getEnv(Constants.Environment.ENV_CONNECTION_MANAGER_SERVICE_NAME
                 +"))(PORT="+ Utilities.getEnv(Constants.Environment.ENV_CONNECTION_MANAGER_SERVICE_PORT +"))))(CONNECT_DATA=(SERVICE_NAME="+serviceName+")))";
         */
-        return  "jdbc:oracle:thin:@" + Utilities.getEnv(Constants.Environment.ENV_CONNECTION_MANAGER_SERVICE_NAME)
+        /* return  "jdbc:oracle:thin:@" + Utilities.getEnv(Constants.Environment.ENV_CONNECTION_MANAGER_SERVICE_NAME)
                 + ":" + Utilities.getEnv(Constants.Environment.ENV_CONNECTION_MANAGER_SERVICE_PORT) + "/" + serviceName;
-
+        */
+        return "TBD";
 
     }
 

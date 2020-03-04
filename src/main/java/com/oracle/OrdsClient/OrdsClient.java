@@ -42,8 +42,7 @@ public class OrdsClient {
         return URI.create(Utilities.getEnv(Constants.Environment.ENV_ORDS_PROTOCOL)
                 + "://" + Utilities.getEnv(Constants.Environment.ENV_ORDS_HOST)
                 + ":" + Utilities.getEnv(Constants.Environment.ENV_ORDS_PORT)
-                + Utilities.getEnv(Constants.Environment.ENV_ORDS_BASEPATH)
-                + "/" + path);
+                + "/ords/" + path);
     }
 
     private static CloseableHttpClient getClient(String username, String password) {

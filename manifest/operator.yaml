@@ -42,19 +42,13 @@ spec:
         - name: CRD
           value: "true"
         - name: ORDS_HOST
-          value: "oracle-ords-service"
-        - name: ORDS_BASEPATH
-          value: "/ords"
+          value: "oracle-db-ords-service"
         - name: ORDS_PORT
           value: "8888"
         - name: ORDS_PROTOCOL
           value: "http"
         - name: ORDS_CREDENTIAL_SECRET_NAME
-          value: "oracle-ords-credentials"
-        - name: OCM_SERVICE_NAME
-          value: "oracle-cman-service"
-        - name: OCM_SERVICE_PORT
-          value: "1521"
+          value: "oracle-db-ords-credentials"
         - name: DB_FILENAME_CONVERSION_PATTERN
           value: "('/opt/oracle/oradata/ORCLCDB/pdbseed/','/opt/oracle/oradata/ORCLCDB/##PDBNAME##/')"
         imagePullPolicy: Always
