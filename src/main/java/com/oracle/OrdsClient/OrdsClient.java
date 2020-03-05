@@ -26,6 +26,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Version;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.time.Duration;
+import java.util.logging.Level;
 
 
 public class OrdsClient {
@@ -67,7 +75,10 @@ public class OrdsClient {
 
     public static void createPdb(KubernetesClient k8sClient, String namespace, PdbCreationRequestModel pdbDetail)
             throws IOException {
-
+        HttpClient client = HttpClient.newBuilder()
+                .version(Version.HTTP_1_1)
+                .build();
+        
         Secret s = getCredential(k8sClient, namespace);
 
         final String ordsPassword =  Utilities.decodeBase64(s.getData().get("password"));
@@ -82,32 +93,24 @@ public class OrdsClient {
 
         log.info("Request JSON ["+bodyRequest+"]");
 
-        CloseableHttpClient client = getClient(ordsUsername, ordsPassword);
 
-        URI url = getUrl(ORDS_PATH_CREATE_PDB);
-
-        HttpPost request = new HttpPost( url );
-        request.addHeader("Content-Type", "application/json");
-        request.addHeader("Accept", "application/json");
-
-        request.setEntity(new StringEntity( bodyRequest ));
-        log.info("Request ["+request.toString()+"]");
-
-        ResponseHandler< String > responseHandler = response -> {
-        int status = response.getStatusLine().getStatusCode();
-        if (status == 200 ) {
-            HttpEntity entity = response.getEntity();
-            return entity != null ? EntityUtils.toString(entity) : null;
-        } else {
-            log.error( EntityUtils.toString( response.getEntity()) );
-            throw new ClientProtocolException("Unexpected response status: " + status);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://hookb.in/Z2lyReDEWyC1MVqkbz3N"))
+                .timeout(Duration.ofSeconds(5))
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Authorization", "Basic " + Utilities.encodeBase64(ordsUsername + ":" +ordsPassword))
+                .POST(BodyPublishers.ofString(bodyRequest))
+                .build();
+        System.out.println("request is: " + request.toString());
+        HttpResponse<String> response = null;
+        try {
+            response = client.send(request, BodyHandlers.ofString());
+        } catch (InterruptedException ex) {
+            java.util.logging.Logger.getLogger(OrdsClient.class.getName()).log(Level.SEVERE, null, ex);
         }
-};
-        String responseBody = client.execute(request, responseHandler);
-
-
-
-        log.info(responseBody);
+        System.out.println(response.statusCode());
+        System.out.println(response.body());
 
 
 
