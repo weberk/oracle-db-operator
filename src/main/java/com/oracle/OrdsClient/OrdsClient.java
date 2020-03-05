@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.net.URI;
 import org.apache.http.client.methods.CloseableHttpResponse;
 
-
 public class OrdsClient {
 
     private static String ORDS_PATH_CREATE_PDB = "_/db-api/stable/database/pdbs/";
@@ -36,13 +35,13 @@ public class OrdsClient {
     private static final Logger log = LoggerFactory.getLogger(OrdsClient.class.getName());
 
     private static URI getUrl(String path) {
-        /*
+
         return URI.create(Utilities.getEnv(Constants.Environment.ENV_ORDS_PROTOCOL)
                 + "://" + Utilities.getEnv(Constants.Environment.ENV_ORDS_HOST)
                 + ":" + Utilities.getEnv(Constants.Environment.ENV_ORDS_PORT)
                 + "/ords/" + path);
-         */
-        return URI.create("https://hookb.in/Z2lyReDEWyC1MVqkbz3N");
+
+        //return URI.create("https://hookb.in/Z2lyReDEWyC1MVqkbz3N");
     }
 
     private static CloseableHttpClient getClient(String username, String password) {
@@ -75,9 +74,10 @@ public class OrdsClient {
         String bodyRequest = mapper.writeValueAsString(pdbDetail);
 
         log.info("Request JSON [" + bodyRequest + "]");
+        log.info(getUrl(ORDS_PATH_CREATE_PDB).toString());
 
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost("https://hookb.in/Z2lyReDEWyC1MVqkbz3N");
+        HttpPost httpPost = new HttpPost(getUrl(ORDS_PATH_CREATE_PDB));
         httpPost.setEntity(new StringEntity(bodyRequest));
         httpPost.setHeader("Accept", "application/json");
         httpPost.setHeader("Content-type", "application/json");
@@ -85,8 +85,6 @@ public class OrdsClient {
         CloseableHttpResponse response = client.execute(httpPost);
         log.info(response.toString());
         client.close();
-
-
 
     }
 
