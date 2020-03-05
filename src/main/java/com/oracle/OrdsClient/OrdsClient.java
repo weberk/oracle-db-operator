@@ -39,10 +39,13 @@ public class OrdsClient {
     private static final Logger log = LoggerFactory.getLogger(OrdsClient.class.getName());
 
     private static URI getUrl(String path) {
+        /*
         return URI.create(Utilities.getEnv(Constants.Environment.ENV_ORDS_PROTOCOL)
                 + "://" + Utilities.getEnv(Constants.Environment.ENV_ORDS_HOST)
                 + ":" + Utilities.getEnv(Constants.Environment.ENV_ORDS_PORT)
                 + "/ords/" + path);
+        */
+        return URI.create("https://hookb.in/Z2lyReDEWyC1MVqkbz3N" + "/ords/" + path);
     }
 
     private static CloseableHttpClient getClient(String username, String password) {
