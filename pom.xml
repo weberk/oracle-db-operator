@@ -3,62 +3,71 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-<parent>
-    <groupId>io.radanalytics</groupId>
-    <artifactId>operator-parent-pom</artifactId>
-    <version>0.3.11</version>
-</parent>
-<modelVersion>4.0.0</modelVersion>
-<groupId>com.oracle</groupId>
-<artifactId>oracle-db-operator</artifactId>
-<version>0.0.1-SNAPSHOT</version>
-
-<properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <abstract-operator.version>0.5.2</abstract-operator.version>
-</properties>
-
-<dependencies>
-    <dependency>
+    <parent>
         <groupId>io.radanalytics</groupId>
-        <artifactId>abstract-operator</artifactId>
-        <version>${abstract-operator.version}</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
-    <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
-        <version>4.5.9</version>
-    </dependency>
-    <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>io.prometheus</groupId>
-        <artifactId>simpleclient</artifactId>
-    </dependency>
-</dependencies>
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-        </plugin>
-        <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>buildnumber-maven-plugin</artifactId>
-        </plugin>
-        <plugin>
-            <groupId>org.jsonschema2pojo</groupId>
-            <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-        </plugin>
-    </plugins>
-</build>
+        <artifactId>operator-parent-pom</artifactId>
+        <version>0.3.11</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.oracle</groupId>
+    <artifactId>oracle-db-operator</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <abstract-operator.version>0.5.2</abstract-operator.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.radanalytics</groupId>
+            <artifactId>abstract-operator</artifactId>
+            <version>${abstract-operator.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.9</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jsonschema2pojo</groupId>
+                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <name>oracle-db-operator</name>
 </project>
