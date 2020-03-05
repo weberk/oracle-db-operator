@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM adoptopenjdk/openjdk11
 
 ENV JAVA_OPTS="-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
 
