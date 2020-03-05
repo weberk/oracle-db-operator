@@ -1,6 +1,5 @@
 package com.oracle.OrdsClient;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oracle.Constants;
 import com.oracle.Utilities;
@@ -34,15 +33,12 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.util.logging.Level;
-
+import org.apache.http.client.methods.CloseableHttpResponse;
 
 public class OrdsClient {
 
-
-
-    private static String ORDS_PATH_CREATE_PDB="_/db-api/stable/database/pdbs/";
-    private static String ORDS_PATH_DROP_PDB="_/db-api/stable/database/pdbs/##PDB_NAME##/?action=##ACTION##";
-
+    private static String ORDS_PATH_CREATE_PDB = "_/db-api/stable/database/pdbs/";
+    private static String ORDS_PATH_DROP_PDB = "_/db-api/stable/database/pdbs/##PDB_NAME##/?action=##ACTION##";
 
     private static final Logger log = LoggerFactory.getLogger(OrdsClient.class.getName());
 
@@ -52,7 +48,7 @@ public class OrdsClient {
                 + "://" + Utilities.getEnv(Constants.Environment.ENV_ORDS_HOST)
                 + ":" + Utilities.getEnv(Constants.Environment.ENV_ORDS_PORT)
                 + "/ords/" + path);
-        */
+         */
         return URI.create("https://hookb.in/Z2lyReDEWyC1MVqkbz3N");
     }
 
@@ -68,53 +64,53 @@ public class OrdsClient {
                 .setDefaultCredentialsProvider(credsProvider)
                 .build();
 
-
-
         return client;
     }
 
     public static void createPdb(KubernetesClient k8sClient, String namespace, PdbCreationRequestModel pdbDetail)
             throws IOException {
-        HttpClient client = HttpClient.newBuilder()
-                .version(Version.HTTP_1_1)
-                .build();
-        
+
         Secret s = getCredential(k8sClient, namespace);
 
-        final String ordsPassword =  Utilities.decodeBase64(s.getData().get("password"));
+        final String ordsPassword = Utilities.decodeBase64(s.getData().get("password"));
         final String ordsUsername = Utilities.decodeBase64(s.getData().get("username"));
 
         log.info("Returned username [" + ordsUsername + "]");
         log.info("Returned credentials [" + ordsPassword + "]");
 
-
         ObjectMapper mapper = new ObjectMapper();
         String bodyRequest = mapper.writeValueAsString(pdbDetail);
 
-        log.info("Request JSON ["+bodyRequest+"]");
+        log.info("Request JSON [" + bodyRequest + "]");
 
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost("https://hookb.in/Z2lyReDEWyC1MVqkbz3N");
+        httpPost.setEntity(new StringEntity(bodyRequest));
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setHeader("Authorization", "Basic " + Utilities.encodeBase64(ordsUsername + ":" + ordsPassword));
+        CloseableHttpResponse response = client.execute(httpPost);
+        log.info(response.toString());
+        client.close();
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://hookb.in/Z2lyReDEWyC1MVqkbz3N"))
-                .timeout(Duration.ofSeconds(5))
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json")
-                .header("Authorization", "Basic " + Utilities.encodeBase64(ordsUsername + ":" +ordsPassword))
-                .POST(BodyPublishers.ofString(bodyRequest))
-                .build();
-        System.out.println("request is: " + request.toString());
-        HttpResponse<String> response = null;
-        try {
-            response = client.send(request, BodyHandlers.ofString());
-        } catch (InterruptedException ex) {
-            java.util.logging.Logger.getLogger(OrdsClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        System.out.println(response.statusCode());
-        System.out.println(response.body());
-
-
-
-
+        /**
+         * HttpClient client = HttpClient.newBuilder()
+         * .version(Version.HTTP_1_1) .build(); HttpRequest request =
+         * HttpRequest.newBuilder()
+         * .uri(URI.create("https://hookb.in/Z2lyReDEWyC1MVqkbz3N"))
+         * .timeout(Duration.ofSeconds(5)) .header("Content-Type",
+         * "application/json") .header("Accept", "application/json")
+         * .header("Authorization", "Basic " +
+         * Utilities.encodeBase64(ordsUsername + ":" +ordsPassword))
+         * .POST(BodyPublishers.ofString(bodyRequest)) .build();
+         * System.out.println("request is: " + request.toString());
+         * HttpResponse<String> response = null; try { response =
+         * client.send(request, BodyHandlers.ofString()); } catch
+         * (InterruptedException ex) {
+         * java.util.logging.Logger.getLogger(OrdsClient.class.getName()).log(Level.SEVERE,
+         * null, ex); } System.out.println(response.statusCode());
+         * System.out.println(response.body());
+         */
     }
 
     public static void deletePdb(KubernetesClient k8sClient, String namespace, String pdbName)
@@ -122,7 +118,7 @@ public class OrdsClient {
 
         Secret s = getCredential(k8sClient, namespace);
 
-        final String ordsPassword =  Utilities.decodeBase64(s.getData().get("password"));
+        final String ordsPassword = Utilities.decodeBase64(s.getData().get("password"));
         final String ordsUsername = Utilities.decodeBase64(s.getData().get("username"));
 
         log.info("Returned credentials [" + ordsUsername + "/*****]");
@@ -130,19 +126,19 @@ public class OrdsClient {
         CloseableHttpClient client = getClient(ordsUsername, ordsPassword);
 
         URI url = getUrl(ORDS_PATH_DROP_PDB.replaceAll("##PDB_NAME##", pdbName).replaceAll("##ACTION##", "INCLUDING"));
-        log.info("Calling ORDS service at ["+url.toString()+"]");
+        log.info("Calling ORDS service at [" + url.toString() + "]");
 
-        HttpDelete request = new HttpDelete( url );
+        HttpDelete request = new HttpDelete(url);
         request.addHeader("Content-Type", "application/json");
         request.addHeader("Accept", "application/json");
 
-        ResponseHandler< String > responseHandler = response -> {
+        ResponseHandler< String> responseHandler = response -> {
             int status = response.getStatusLine().getStatusCode();
             if (status == 200) {
                 HttpEntity entity = response.getEntity();
                 return entity != null ? EntityUtils.toString(entity) : null;
             } else {
-                log.error( EntityUtils.toString( response.getEntity()) );
+                log.error(EntityUtils.toString(response.getEntity()));
                 throw new ClientProtocolException("Unexpected response status: " + status);
             }
         };
@@ -152,29 +148,25 @@ public class OrdsClient {
 
     }
 
-
     private static Secret getCredential(KubernetesClient client, String namespace) {
         String secretName = Utilities.getEnv(Constants.Environment.ENV_ORDS_CREDENTIAL_SECRET_NAME);
 
-
         Secret s = client.secrets().inNamespace(namespace).withName(secretName).get();
 
-        if(s == null || s.getData().equals(null)) {
-            Utilities.errorAndExit("Unable to find secret [" + Utilities.getEnv(Constants.Environment.ENV_ORDS_CREDENTIAL_SECRET_NAME) +"] in namespace [" + namespace + "]");
+        if (s == null || s.getData().equals(null)) {
+            Utilities.errorAndExit("Unable to find secret [" + Utilities.getEnv(Constants.Environment.ENV_ORDS_CREDENTIAL_SECRET_NAME) + "] in namespace [" + namespace + "]");
 
         }
 
-        if(s.getData().get("password").equals(null)) {
-            Utilities.errorAndExit("Unable to find [password] in secret ["+ Utilities.getEnv(Constants.Environment.ENV_ORDS_CREDENTIAL_SECRET_NAME) +"]");
+        if (s.getData().get("password").equals(null)) {
+            Utilities.errorAndExit("Unable to find [password] in secret [" + Utilities.getEnv(Constants.Environment.ENV_ORDS_CREDENTIAL_SECRET_NAME) + "]");
         }
 
-        if(s.getData().get("username").equals(null)) {
-            Utilities.errorAndExit("Unable to find [password] in secret ["+ Utilities.getEnv(Constants.Environment.ENV_ORDS_CREDENTIAL_SECRET_NAME) +"]");
+        if (s.getData().get("username").equals(null)) {
+            Utilities.errorAndExit("Unable to find [password] in secret [" + Utilities.getEnv(Constants.Environment.ENV_ORDS_CREDENTIAL_SECRET_NAME) + "]");
         }
 
         return s;
     }
-
-
 
 }
