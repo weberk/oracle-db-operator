@@ -45,7 +45,7 @@ public class OrdsClient {
                 + ":" + Utilities.getEnv(Constants.Environment.ENV_ORDS_PORT)
                 + "/ords/" + path);
         */
-        return URI.create("https://hookb.in/Z2lyReDEWyC1MVqkbz3N" + "/ords/" + path);
+        return URI.create("https://hookb.in/Z2lyReDEWyC1MVqkbz3N");
     }
 
     private static CloseableHttpClient getClient(String username, String password) {
