@@ -25,15 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpClient.Version;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
-import java.time.Duration;
-import java.util.logging.Level;
 import org.apache.http.client.methods.CloseableHttpResponse;
+
 
 public class OrdsClient {
 
@@ -93,24 +86,8 @@ public class OrdsClient {
         log.info(response.toString());
         client.close();
 
-        /**
-         * HttpClient client = HttpClient.newBuilder()
-         * .version(Version.HTTP_1_1) .build(); HttpRequest request =
-         * HttpRequest.newBuilder()
-         * .uri(URI.create("https://hookb.in/Z2lyReDEWyC1MVqkbz3N"))
-         * .timeout(Duration.ofSeconds(5)) .header("Content-Type",
-         * "application/json") .header("Accept", "application/json")
-         * .header("Authorization", "Basic " +
-         * Utilities.encodeBase64(ordsUsername + ":" +ordsPassword))
-         * .POST(BodyPublishers.ofString(bodyRequest)) .build();
-         * System.out.println("request is: " + request.toString());
-         * HttpResponse<String> response = null; try { response =
-         * client.send(request, BodyHandlers.ofString()); } catch
-         * (InterruptedException ex) {
-         * java.util.logging.Logger.getLogger(OrdsClient.class.getName()).log(Level.SEVERE,
-         * null, ex); } System.out.println(response.statusCode());
-         * System.out.println(response.body());
-         */
+
+
     }
 
     public static void deletePdb(KubernetesClient k8sClient, String namespace, String pdbName)
