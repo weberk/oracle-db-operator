@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URI;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.util.EntityUtils;
 
 public class OrdsClient {
     private static String ORDS_PATH_CREATE_PDB = "_/db-api/stable/database/pdbs/";
@@ -50,7 +51,7 @@ public class OrdsClient {
         request.setHeader("Content-type", "application/json");
         request.setHeader("Authorization", "Basic " + Utilities.encodeBase64(ordsUsername + ":" + ordsPassword));
         CloseableHttpResponse response = client.execute(request);
-        log.info(response.toString());
+        log.info(EntityUtils.toString(response.getEntity()));
         client.close();
     }
 
@@ -71,7 +72,7 @@ public class OrdsClient {
         request.setHeader("Content-type", "application/json");
         request.setHeader("Authorization", "Basic " + Utilities.encodeBase64(ordsUsername + ":" + ordsPassword));
         CloseableHttpResponse response = client.execute(request);
-        log.info(response.toString());
+        log.info(EntityUtils.toString(response.getEntity()));
         client.close();
         
         
