@@ -5,7 +5,7 @@
 Kubernetes native approach for lifecycle management of Oracle pluggable databases inside of a Oracle container (multitenant) database, based on kubernetes operator and custom ressource definitions (CRD). It enables seamless integration of DevOps pipelines for microservices using Oralce polyglot databases, with Oracle autonomous database technology
 
 # Architecture
-TBD
+![Screenshot](architecture.png)
 
 # Required docker images
 
