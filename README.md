@@ -2,10 +2,15 @@
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-Kubernetes native approach for lifecycle management of Oracle pluggable databases inside of a Oracle container (multitenant) database, based on kubernetes operator and custom ressource definitions (CRD). It enables seamless integration of DevOps pipelines for microservices using Oralce polyglot databases, with Oracle autonomous database technology
+The oracle-db-operator implements a kubernetes native approach for lifecycle management of Oracle pluggable databases(PDB) inside of a Oracle container (multitenant) database(CDB), based on kubernetes operator and custom ressource definitions (CRD). It enables seamless integration of DevOps pipelines for microservices using Oralce polyglot databases, with Oracle autonomous database technology
 
 # Architecture
 ![Screenshot](architecture.png)
+The Oracle container/multitenant database is shown in the picture as running in a k8s pod, which is fine for tests and development, but for production environments it will be running on-premise or as a cloud service.
+
+In a DevOps scenario, first a custom ressource definition containing the configuration of a PDB would be created. This would trigger the oracle-db-operator to provision the PDB using a REST API call to ORDS, that will be forwarded to the container database. In parallel, a secret containing the PDB client credentials will be created. A database client app could then use this secret to communicate with the PDB. Similarly, the deletion of the CRD would lead to deletion of the PDB.
+
+The oracle-db-operator implements a similar functionality to the [OCI Service Broker](https://github.com/oracle/oci-service-broker/) for Oracle database services in the cloud, but in contrast it can be used for on-premis scenarios.
 
 # Required docker images
 
@@ -105,7 +110,7 @@ kubectl apply -f manifest/operator.yaml
 ```
 Provision a test PDB mypdb, e.g.:
 ```bash
-kubectl create -f examples/cr.yaml
+kubectl create -f examples/crd.yaml
 ```
 Create a test PDB client, e.g.:
 ```bash
