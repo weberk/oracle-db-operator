@@ -62,7 +62,7 @@ docker tag oracle/oracle-db-operator:latest \
 docker push fra.ocir.io/oraseemeadesandbox/pdos/oracle/oracle-db-operator:latest
 ```
 
-# Deployment
+# Deployment in a Kubernetes cluster
 Please make sure to replace all occurrences of 'fra.ocir.io/oraseemeadesandbox/pdos' in your local git repo clone with the appropriate prefix of your docker repository
 
 Assuming you have already logged in to your docker repository, create a registry secret to hold the docker credentials for it, to be used in later deployments, e.g.:
