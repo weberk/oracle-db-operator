@@ -148,7 +148,7 @@ kubectl create -f examples/crd.yaml
 ```
 Check that the pdb was created:
 ```bash
-kubectl exec -it <oracle-db-operator pod> -- bash -c "echo show pdbs|sqlplus / as sysdba"
+kubectl exec -it <oracle-db pod> -- bash -c "echo show pdbs|sqlplus / as sysdba"
 ...
 Connected to:
 Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
