@@ -6,18 +6,24 @@ The oracle-db-operator implements a kubernetes native approach for lifecycle man
 
 # Architecture
 ![Screenshot](architecture.png)
+*Scenario 1: Oracle DB running in a pod*
+
 The Oracle container/multitenant database is shown in the picture as running in a k8s pod, which is fine for tests and development, but for production environments it will be running on-premise or as a cloud service:
 
 ![Screenshot](architecture2.png)
+*Scenario 2: Oracle DB running standalone*
+
 
 In a DevOps scenario, first a custom ressource definition containing the configuration of a PDB would be created. This would trigger the oracle-db-operator to provision the PDB using a REST API call to ORDS, that will be forwarded to the container database. In parallel, a secret containing the PDB client credentials will be created. A database client app could then use this secret to communicate with the PDB. Similarly, the deletion of the CRD would lead to deletion of the PDB.
 
 The oracle-db-operator implements a similar functionality to the [OCI Service Broker](https://github.com/oracle/oci-service-broker/) for Oracle database services in the cloud like autonomous database and data-warehouse, but it can also be used for on-premise scenarios.
 
+The following describes an example deployment of Scenario 1 above in the Oracle Public Cloud, but with some minor changes noted below should work in any kubernetes cluster.
+
 # Required Docker images
 
 # Oracle Database
-Build a docker image as described in https://github.com/oracle/docker-images/blob/master/OracleDatabase/SingleInstance/README.md. After cloning the git repository, download the database binaries in the version you need from [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), put them in the dockerfiles/version folder, go in the dockerfiles directory and execute e.g.:
+Build a docker image as described in https://github.com/oracle/docker-images/blob/master/OracleDatabase/SingleInstance/README.md. After cloning the git repository, download the database binaries in the version you need from [Oracle Technology Network](http://www.oracle.com/technetwork/database/enterprise-edition/downloads/index.html), put them in the dockerfiles/version folder, go in the dockerfiles direct0ry and execute e.g.:
 ```bash
 ./buildDockerImage.sh -e -v 19.3.0
 ```
@@ -99,6 +105,9 @@ The Oracle base remains unchanged with value /opt/oracle
 DATABASE IS READY TO USE!
 #########################
 ```
+
+If an existing external CDB is used, as in Scenario 2, then the script examples/database/configmaps/init.sql should be executed on it. It creates a special CDB user with corresponding privileges, that is needed by ORDS for PDB life-cycle operations.
+
 Create a config map for initial ORDS configuration:
 ```bash
 kubectl create configmap oracle-db-ords-config \
@@ -108,6 +117,10 @@ Create a persistence volume claim to hold ORDS config data:
 ```bash
 kubectl create -f examples/ords/ords-persistent-storage.yaml
 ```
+If the deployment is not on Oracle Public Cloud, the storageClassName in ords-persistent-storage.yaml should be changed from "oci" to "default" or the value supported by the used kubernetes implementation.
+
+If an existing external CDB is used, as in Scenario 2, then some env vars in examples/ords/ords-deployment.yaml will have to be ajusted (e.g. ORACLE_HOST, ORACLE_SERVICE, ORACLE_PWD)
+
 Deploy ORDS:
 ```bash
 kubectl create -f examples/ords/ords-deployment.yaml
@@ -142,6 +155,8 @@ Deploy Oracle database operator:
 ```bash
 kubectl apply -f manifest/operator.yaml
 ```
+If an existing external CDB is used, as in Scenario 2, then the value of DB_FILENAME_CONVERSION_PATTERN in manifest/operator.yaml should be changed to ('+DATA','+DATA')
+
 Provision a test PDB mypdb, e.g.:
 ```bash
 kubectl create -f examples/crd.yaml
