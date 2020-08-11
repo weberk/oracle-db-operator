@@ -17,7 +17,7 @@ subjects:
     name: oracle-db-operator
     namespace: default
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: oracle-db-operator
