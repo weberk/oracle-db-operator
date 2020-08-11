@@ -29,8 +29,7 @@ Build a docker image as described in https://github.com/oracle/docker-images/blo
 ```
 Then tag the image and push it to your repo, e.g.:
 ```bash
-docker tag oracle/database:19.3.0-ee \
-   fra.ocir.io/oraseemeadesandbox/pdos/oracle/database:19.3.0-ee
+docker tag oracle/database:19.3.0-ee fra.ocir.io/oraseemeadesandbox/pdos/oracle/database:19.3.0-ee
 ```
 ```bash
 docker push fra.ocir.io/oraseemeadesandbox/pdos/oracle/database:19.3.0-ee
@@ -50,8 +49,7 @@ After cloning the git repository, download the ORDS binaries in the version you 
 ```
 Then tag the image and push it to your repo, e.g.:
 ```bash
-docker tag oracle/restdataservices:19.2.0 \
-   fra.ocir.io/oraseemeadesandbox/pdos/oracle/restdataservices:19.2.0
+docker tag oracle/restdataservices:19.2.0 fra.ocir.io/oraseemeadesandbox/pdos/oracle/restdataservices:19.2.0
 ```
 ```bash
 docker push fra.ocir.io/oraseemeadesandbox/pdos/oracle/restdataservices:19.2.0
@@ -63,8 +61,7 @@ make build
 ```
 Then tag and push the docker image to your repository, e.g.:
 ```bash
-docker tag oracle/oracle-db-operator:latest \
-   fra.ocir.io/oraseemeadesandbox/pdos/oracle/oracle-db-operator:latest
+docker tag oracle/oracle-db-operator:latest fra.ocir.io/oraseemeadesandbox/pdos/oracle/oracle-db-operator:latest
 ```
 ```bash
 docker push fra.ocir.io/oraseemeadesandbox/pdos/oracle/oracle-db-operator:latest
@@ -75,9 +72,7 @@ Please make sure to replace all occurrences of 'fra.ocir.io/oraseemeadesandbox/p
 
 Assuming you have already logged in to your docker repository, create a registry secret to hold the docker credentials for it, to be used in later deployments, e.g.:
 ```bash
-kubectl create secret generic registry-secret \
-    --from-file=.dockerconfigjson=/home/opc/.docker/config.json \
-    --type=kubernetes.io/dockerconfigjson
+kubectl create secret generic registry-secret --from-file=.dockerconfigjson=/home/opc/.docker/config.json --type=kubernetes.io/dockerconfigjson
 ```
 Create configmap holding the sql script to provision the special database user for PDB lifecycle REST API:
 ```bash
@@ -93,7 +88,7 @@ kubectl create -f examples/database/oracle-db-deployment.yaml
 ```
 This took around 10 min. on my machine. Check the logs to see that the database is configured and ready:
 ```bash
-kubectl logs <oracle-db pod>
+kubectl logs $(kubectl get pod -l app=oracle-db --output=jsonpath={.items..metadata.name})
 ...
 Executing user defined scripts
 /opt/oracle/runUserScripts.sh: running /opt/oracle/scripts/setup/init.sql
@@ -110,8 +105,7 @@ If an existing external CDB is used, as in Scenario 2, then the script examples/
 
 Create a config map for initial ORDS configuration:
 ```bash
-kubectl create configmap oracle-db-ords-config \
-   --from-file=examples/ords/configmaps/
+kubectl create configmap oracle-db-ords-config --from-file=examples/ords/configmaps/
 ```
 Create a persistence volume claim to hold ORDS config data:
 ```bash
@@ -127,7 +121,7 @@ kubectl create -f examples/ords/ords-deployment.yaml
 ```
 This could also take a minute. Check the log to see that ORDS is ready:
 ```bash
-kubectl logs <oracle-db-ords pod>
+kubectl logs $(kubectl get pod -l app=oracle-db-ords --output=jsonpath={.items..metadata.name})
 ...
 INFO: Configuration properties for: |apex|pu|
 db.hostname=oracle-db-service
@@ -147,9 +141,9 @@ kubectl create -f examples/ords/ords-credentials.yaml
 ```
 Execute post-install.sh for ORDS to add the container database admin user, enable PDB lifecicle API and restart the pod to apply changes:
 ```bash
-kubectl exec -it <oracle-db-ords pod> -- sh -c \
-   /opt/oracle/ords/config/ords/post-install.sh
-kubectl delete pod <oracle-db-ords pod>
+kubectl exec -it $(kubectl get pod -l app=oracle-db-ords --output=jsonpath={.items..metadata.name}) -- sh -c /opt/oracle/ords/config/ords/post-install.sh
+
+kubectl delete pod $(kubectl get pod -l app=oracle-db-ords --output=jsonpath={.items..metadata.name})
 ```
 Deploy Oracle database operator:
 ```bash
@@ -163,7 +157,7 @@ kubectl create -f examples/crd.yaml
 ```
 Check that the pdb was created:
 ```bash
-kubectl exec -it <oracle-db pod> -- bash -c "echo show pdbs|sqlplus / as sysdba"
+kubectl exec -it $(kubectl get pod -l app=oracle-db --output=jsonpath={.items..metadata.name}) -- bash -c "echo show pdbs|sqlplus / as sysdba"
 ...
 Connected to:
 Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
@@ -177,13 +171,13 @@ SQL>
 ```
 Create a test PDB client, e.g.:
 ```bash
-kubectl create configmap oracle-db-client-config \
-   --from-file=examples/db-client/configmaps/
+kubectl create configmap oracle-db-client-config --from-file=examples/db-client/configmaps/
+
 kubectl create -f examples/db-client/db-client.yaml
 ```
 Check that the db-client has successfully connected mypdb:
 ```bash
-kubectl logs <oracle-db-client pod>
+kubectl logs $(kubectl get pod -l app=oracle-db-client --output=jsonpath={.items..metadata.name})
 ...
 Connected to:
 Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
