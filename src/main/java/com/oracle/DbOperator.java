@@ -20,7 +20,7 @@ import okhttp3.OkHttpClient;
 public class DbOperator extends AbstractOperator<OracleCdbService> {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractOperator.class.getName());
-    private static String DEFAULT_USERNAME="DBUSER";
+    private static String DEFAULT_USERNAME="admin";
 
     public DbOperator() {
         java.util.logging.Logger.getLogger(OkHttpClient.class.getName()).setLevel(Level.FINE);
@@ -84,23 +84,27 @@ public class DbOperator extends AbstractOperator<OracleCdbService> {
         } catch (IOException e) {
             log.error("error", e);
         }
-
-
-
     }
 
     protected void onModify(OracleCdbService srv) {
         log.info("existing example has been modified: {}", srv);
     }
 
+//time curl -i --basic --user deseap1_ords:maerija_74  -X POST -d '' -H 'Content-Type: application/json' http://l0398022.idst.ibaintern.de:8082/ords/deseap1/REST_PROXY_PDBMNGT/pdbmngt_user/clone/GET_HOST_PORT
+// {"~ret":"(ADDRESS=(PROTOCOL=TCP)(HOST=l9783022.sdst.sbaintern.de)(PORT=57011))"}	
     private static String getJdbcUrl(String serviceName) {
-        /*return "jdbc:oracle:thin:@(DESCRIPTION = (TRANSPORT_CONNECT_TIMEOUT=3)(CONNECT_TIMEOUT=60)(RETRY_COUNT=20)(RETRY_DELAY=3)(FAILOVER=ON)(ADDRESS_LIST=(ADDRESS=(PROTOCOL=tcp)(HOST="+Utilities.getEnv(Constants.Environment.ENV_CONNECTION_MANAGER_SERVICE_NAME
-                +"))(PORT="+ Utilities.getEnv(Constants.Environment.ENV_CONNECTION_MANAGER_SERVICE_PORT +"))))(CONNECT_DATA=(SERVICE_NAME="+serviceName+")))";
-        */
+        /*return "jdbc:oracle:thin:@(DESCRIPTION = (TRANSPORT_CONNECT_TIMEOUT=3)(CONNECT_TIMEOUT=120)(RETRY_COUNT=20)(RETRY_DELAY=3)(FAILOVER=ON)(ADDRESS_LIST=(ADDRESS=(PROTOCOL=tcp)(HOST="
+				+ Utilities.getEnv(Constants.Environment.ENV_CONNECTION_MANAGER_SERVICE_NAME) +
+				"))(PORT="
+				+ Utilities.getEnv(Constants.Environment.ENV_CONNECTION_MANAGER_SERVICE_PORT) +
+				"))))(CONNECT_DATA=(SERVICE_NAME="
+				+ serviceName
+				+ ")))";*/
+        
         /* return  "jdbc:oracle:thin:@" + Utilities.getEnv(Constants.Environment.ENV_CONNECTION_MANAGER_SERVICE_NAME)
                 + ":" + Utilities.getEnv(Constants.Environment.ENV_CONNECTION_MANAGER_SERVICE_PORT) + "/" + serviceName;
         */
-        return "TBD";
+        return "TBD: call ORDS for dtabase host and port information.";
 
     }
 

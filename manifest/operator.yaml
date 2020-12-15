@@ -3,19 +3,56 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: oracle-db-operator
+  namespace: thf-007-oracle
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
 metadata:
   name: oracle-db-operator
-roleRef:
-  kind: ClusterRole
-  name: cluster-admin
-  apiGroup: ""
+  namespace: thf-007-oracle
+rules:
+- apiGroups:
+    - ''
+    - k3s.cattle.io
+  resources:
+    - pods
+    - addons
+  verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - delete
+    - patch
+- apiGroups:
+    - apiextensions.k8s.io
+  resources:
+    - customresourcedefinitions
+  verbs:
+    - list
+    - watch
+- apiGroups:
+    - sea.ba.de
+  resources:
+    - kafkatopics
+  verbs:
+    - list
+    - watch  
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: oracle-db-operator-binding
+  namespace: thf-007-oracle
 subjects:
   - kind: ServiceAccount
     name: oracle-db-operator
-    namespace: default
+    namespace: thf-007-oracle
+roleRef:
+  kind: ClusterRole
+  name: oracle-db-operator
+  apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -24,6 +61,10 @@ metadata:
   labels: &default-labels
     app.kubernetes.io/name: oracle-db-operator
     app.kubernetes.io/version: v0.0.1-v1alpha1
+  namespace: thf-007-oracle
+  annotations:
+    maintainer: _BA-IT-Systemhaus-SEAQ1 <IT-Systemhaus.SEAQ1@arbeitsagentur.de>
+    skipBnfas: "BaseImageValidator,SDCValidator"
 spec:
   replicas: 1
   selector:
@@ -37,12 +78,15 @@ spec:
       serviceAccountName: oracle-db-operator
       containers:
       - name: oracle-db-operator
-        image: fra.ocir.io/oraseemeadesandbox/pdos/oracle/oracle-db-operator:latest
+        image: registry-thf.idst.ibaintern.de:5050/seaq1/pdbprovisionierung/oracle/oracle-db-operator:0.0.1
         env:
         - name: CRD
           value: "true"
         - name: ORDS_HOST
-          value: "oracle-db-ords-service"
+#  sv-ords-deseap1
+# Cluster: thf-vermittlung Namespace: thf-001-ipdt-ords Servicename: sv-ords-deseap1 
+          value: "sv-ords-deseap1"
+#         value: "oracle-db-ords-service"
         - name: ORDS_PORT
           value: "8888"
         - name: ORDS_PROTOCOL
@@ -52,6 +96,20 @@ spec:
         - name: DB_FILENAME_CONVERSION_PATTERN
           value: "('/opt/oracle/oradata/ORCLCDB/pdbseed/','/opt/oracle/oradata/ORCLCDB/##PDBNAME##/')"
         imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+            - ls
+            - /tmp
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+          - mountPath: /tmp
+            name: tmp-volume        
       imagePullSecrets:
-        - name: registry-secret
-
+        - name: registry
+      volumes:
+      - emptyDir:           
+          medium: memory
+          sizeLimit: 50Mi
+        name: tmp-volume
